@@ -21,7 +21,6 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         serializer.save(author=self.request.user)
-        super(PostViewSet, self).perform_update(serializer)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -42,7 +41,6 @@ class CommentViewSet(viewsets.ModelViewSet):
         post_id = self.kwargs.get('post_id')
         serializer.save(author=self.request.user,
                         post=get_object_or_404(Post, pk=post_id))
-        super(CommentViewSet, self).perform_update(serializer)
 
     def perform_create(self, serializer):
         post_id = self.kwargs.get('post_id')
@@ -59,13 +57,8 @@ class FollowViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post']
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
-    pagination_class = LimitOffsetPagination
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('user__username', 'following__username')
-
-    def perform_update(self, serializer):
-        serializer.save(user=self.request.user)
-        super(PostViewSet, self).perform_update(serializer)
+    search_fields = ('following__username',)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
